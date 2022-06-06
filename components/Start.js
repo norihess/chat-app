@@ -3,6 +3,12 @@ import { View, Text, Button, TextInput, StyleSheet, ImageBackground, TouchableOp
 
 import BackgroundImage from '../assets/background-image.png';
 
+const colors = {
+  black: "#090C08",
+  purple: "#474056",
+  grey: "#8A95A5",
+  green: "#B9C6AE",
+};
 
 export default class Start extends React.Component {
 	constructor(props) {
@@ -17,6 +23,7 @@ export default class Start extends React.Component {
 		changeBgColor = (newColor) => {
 			this.setState({ bgColor: newColor });
 		};
+		
 		// backgroud colors to choose
 		colors = {
 			black: "#090C08",
