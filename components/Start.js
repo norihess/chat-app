@@ -52,7 +52,7 @@ export default class Start extends React.Component {
 							<View style={styles.colorBox}>
 								<Text style={styles.chooseColor}>
 									{" "}
-									Pick your background color!{" "}
+									Pick a background color!{" "}
 								</Text>
 							</View>
 	
