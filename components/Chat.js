@@ -1,23 +1,13 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, Platform, KeyboardAvoidingView} from 'react-native';
-// import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
-
+import { GiftedChat } from 'react-native-gifted-chat';
 
 export default class Chat extends React.Component {
   constructor() {
     super();
     this.state = {
       messages: [],
-      uid: 0,
-      user: {
-        _id: "",
-        name: "",
-        avatar: "",
-      },
-      isConnected: false,
-      image: null,
-      location: null,
-    };
+    }
   }
   
   componentDidMount() {
@@ -25,7 +15,28 @@ export default class Chat extends React.Component {
     const name = this.props.route.params.name;
     // if (name === '') name = 'UNNAMED'
     this.props.navigation.setOptions({ title: name});
+
+    this.setState({
+      messages: [
+        {
+          _id: 1,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://placeimg.com/140/140/any',
+          },
+        },
+      ],
+    }) 
   } 
+
+  onSend(messages = []) {
+    this.setState(previousState => ({
+      messages: GiftedChat.append(previousState.messages, messages),
+    }))
+  }
 
 
 
@@ -36,6 +47,13 @@ render() {
 
   return (
     <View style={styles.chatView}>
+      <GiftedChat
+        messages={this.state.messages}
+        onSend={messages => this.onSend(messages)}
+        user={{
+          _id: 1,
+        }}
+        />
   </View>
     );
   }
@@ -45,5 +63,6 @@ render() {
 const styles = StyleSheet.create({
   chatView: {
     flex: 1,
+    backgroundColor: bgColor
   },
 })
