@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, Platform, KeyboardAvoidingView} from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+// import { GiftedChat } from 'react-native-gifted-chat';
 
 export default class Chat extends React.Component {
   constructor() {
@@ -46,23 +46,12 @@ render() {
    const { bgColor } = this.props.route.params;
 
   return (
-    <View style={styles.chatView}>
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={messages => this.onSend(messages)}
-        user={{
-          _id: 1,
-        }}
-        />
-  </View>
+    <View style={{ flex: 1, backgroundColor: bgColor }}></View>
     );
   }
 }
 
 
 const styles = StyleSheet.create({
-  chatView: {
-    flex: 1,
-    backgroundColor: bgColor
-  },
+  
 })
