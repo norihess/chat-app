@@ -4,6 +4,7 @@ import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from '@react-native-community/netinfo';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDGNLywIhnK9I7azadzroOcj3-e4qFQ-Y0",
@@ -60,10 +61,15 @@ export default class Chat extends React.Component {
    const name = this.props.route.params.name;
    // if (name === '') name = 'UNNAMED'
    this.props.navigation.setOptions({ title: name});
-     // Reference to load messages via Firebase
-  // this.referenceChatMessages = firebase.firestore().collection("messages");
-  
-    this.getMessages();
+   this.getMessages();
+
+    NetInfo.fetch().then(connection => {
+      if (connection.isConnected) {
+        console.log('online');
+      } else {
+        console.log('offline');
+      }
+    });
   }
 
 // firebase storage
@@ -152,13 +158,23 @@ onCollectionUpdate = (querySnapshot) => {
   });
 };
 
+renderInputToolbar(props) {
+  if (this.state.isConnected == false) {
+  } else {
+    return(
+      <InputToolbar
+      {...props}
+      />
+    );
+  }
+}
   renderBubble(props) {
     return (
       <Bubble
         {...props}
         wrapperStyle={{
           right: {
-            backgroundColor: '#000'
+            backgroundColor: '#000',
           }
         }}
       />

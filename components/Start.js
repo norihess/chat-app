@@ -20,7 +20,7 @@ export default class Start extends React.Component {
 		// backgroud colors to choose
 		colors = {
 			turq: "#114B5F",
-			wheat: "#EFD6AC",
+			wheat: "#ECE2D2",
 			maroon: "#6B2737",
 			pink: "#F45B69",
 			blueGrey: "#7C9EB2",
