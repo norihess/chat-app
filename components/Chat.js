@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, Platform, KeyboardAvoidingView} from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import firebase from 'firebase';
+import 'firebase/firestore';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const firebase = require('firebase');
-require('firebase/firestore');
-
-//// firebase adding credential in order to connect to firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDGNLywIhnK9I7azadzroOcj3-e4qFQ-Y0",
   authDomain: "chat-app-2574c.firebaseapp.com",
@@ -18,7 +17,24 @@ export default class Chat extends React.Component {
   constructor(){
     super();
     this.state ={
-      messages: [],
+      messages: [
+        {
+          _id: 1,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://images.unsplash.com/photo-1608155686393-8fdd966d784d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3JlYXRpdmUlMjBwcm9maWxlfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
+          },
+         },
+         {
+          _id: 2,
+          text: 'This is a system message',
+          createdAt: new Date(),
+          system: true,
+         },
+      ],
       uid: 0,
       user: {
         _id: "",
@@ -45,34 +61,27 @@ export default class Chat extends React.Component {
    // if (name === '') name = 'UNNAMED'
    this.props.navigation.setOptions({ title: name});
      // Reference to load messages via Firebase
-    this.referenceChatMessages = firebase.firestore().collection("messages");
-    
-    this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://images.unsplash.com/photo-1608155686393-8fdd966d784d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3JlYXRpdmUlMjBwcm9maWxlfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
-          },
-         },
-         {
-          _id: 2,
-          text: 'This is a system message',
-          createdAt: new Date(),
-          system: true,
-         },
-      ],
-    })
+  // this.referenceChatMessages = firebase.firestore().collection("messages");
+  
+    this.getMessages();
   }
 
 // firebase storage
 async saveMessages() {
   try {
     await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+async getMessages() {
+  try {
+    msgs = await AsyncStorage.getItem('messages');
+    console.log(msgs)
+    this.setState({
+      messages: this.referenceChatMessages.onSnapshot(this.onCollectionUpdate)
+    })
   } catch (error) {
     console.log(error.message);
   }
@@ -91,7 +100,7 @@ async deleteMessages() {
 
 // stop listening to auth and collection changes
 componentWillUnmount() {
-  this.authUnsubscribe();
+  // this.authUnsubscribe();
   
 }
 
