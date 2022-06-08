@@ -3,13 +3,6 @@ import { View, Text, Button, TextInput, StyleSheet, ImageBackground, TouchableOp
 
 import BackgroundImage from '../assets/background-image.png';
 
-const colors = {
-  black: "#090C08",
-  purple: "#474056",
-  grey: "#8A95A5",
-  green: "#B9C6AE",
-};
-
 export default class Start extends React.Component {
 	constructor(props) {
     super(props);
@@ -26,11 +19,11 @@ export default class Start extends React.Component {
 		
 		// backgroud colors to choose
 		colors = {
-			black: "#090C08",
-			purple: "#474056",
-			grey: "#8A95A5",
-			green: "#B9C6AE",
-			blue: "#1B70A0",
+			turq: "#114B5F",
+			wheat: "#EFD6AC",
+			maroon: "#6B2737",
+			pink: "#F45B69",
+			blueGrey: "#7C9EB2",
 		};
 	
 		render() {
@@ -67,19 +60,19 @@ export default class Start extends React.Component {
 							<View style={styles.colorArray}>
 								<TouchableOpacity
 									style={styles.color1}
-									onPress={() => this.changeBgColor(this.colors.black)}
+									onPress={() => this.changeBgColor(this.colors.turq)}
 								></TouchableOpacity>
 								<TouchableOpacity
 									style={styles.color2}
-									onPress={() => this.changeBgColor(this.colors.purple)}
+									onPress={() => this.changeBgColor(this.colors.blueGrey)}
 								></TouchableOpacity>
 								<TouchableOpacity
 									style={styles.color3}
-									onPress={() => this.changeBgColor(this.colors.grey)}
+									onPress={() => this.changeBgColor(this.colors.maroon)}
 								></TouchableOpacity>
 								<TouchableOpacity
 									style={styles.color4}
-									onPress={() => this.changeBgColor(this.colors.green)}
+									onPress={() => this.changeBgColor(this.colors.pink)}
 								></TouchableOpacity>
 							</View>
 	
@@ -179,28 +172,28 @@ export default class Start extends React.Component {
 		},
 	
 		color1: {
-			backgroundColor: "#090C08",
+			backgroundColor: "#114B5F",
 			width: 50,
 			height: 50,
 			borderRadius: 25,
 		},
 	
 		color2: {
-			backgroundColor: "#474056",
+			backgroundColor: "#7C9EB2",
 			width: 50,
 			height: 50,
 			borderRadius: 25,
 		},
 	
 		color3: {
-			backgroundColor: "#8A95A5",
+			backgroundColor: "#6B2737",
 			width: 50,
 			height: 50,
 			borderRadius: 25,
 		},
 	
 		color4: {
-			backgroundColor: "#B9C6AE",
+			backgroundColor: "#F45B69",
 			width: 50,
 			height: 50,
 			borderRadius: 25,
@@ -210,7 +203,7 @@ export default class Start extends React.Component {
 			width: "88%",
 			height: 70,
 			borderRadius: 8,
-			backgroundColor: "#757083",
+			backgroundColor: "#114B5F",
 			alignItems: "center",
 			justifyContent: "center",
 		},
