@@ -11,6 +11,10 @@ export default class Chat extends React.Component {
   }
   
   componentDidMount() {
+     // get username prop from Start.js
+   const name = this.props.route.params.name;
+   // if (name === '') name = 'UNNAMED'
+   this.props.navigation.setOptions({ title: name});
     this.setState({
       messages: [
         {
@@ -55,10 +59,6 @@ export default class Chat extends React.Component {
 
 //render components
 render() {
-   // get username prop from Start.js
-   const name = this.props.route.params.name;
-   // if (name === '') name = 'UNNAMED'
-   this.props.navigation.setOptions({ title: name});
    //background color chosen in Start screen is set as const bgColor
    const { bgColor } = this.props.route.params;
 
