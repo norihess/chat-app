@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, Platform, KeyboardAvoidingView} from 'react-native';
-import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import { StyleSheet, View, Text, Platform, KeyboardAvoidingView, Button} from 'react-native';
+import { GiftedChat, Bubble, } from 'react-native-gifted-chat';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
+import MapView from 'react-native-maps';
+import CustomActions from './CustomActions';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDGNLywIhnK9I7azadzroOcj3-e4qFQ-Y0",
@@ -44,6 +46,7 @@ export default class Chat extends React.Component {
         image: null,
         location: null,
       },
+      image: null,
     }
 
     // initializes the Firestore app
@@ -63,14 +66,46 @@ export default class Chat extends React.Component {
    this.props.navigation.setOptions({ title: name});
    this.getMessages();
 
-    NetInfo.fetch().then(connection => {
-      if (connection.isConnected) {
-        console.log('online');
-      } else {
-        console.log('offline');
-      }
-    });
-  }
+   NetInfo.fetch().then((connection) => {
+    if (connection.isConnected) {
+      this.setState({ isConnected: true });
+      console.log('online');
+
+      this.authUnsubscribe = firebase.auth().onAuthStateChanged(async user => {
+        if (!user) {
+          await firebase.auth().signInAnonymously();
+        }
+
+        //update user state with currently active user data
+        this.setState({
+          uid: user.uid,
+          messages: [],
+          user: {
+            _id: user.uid,
+            username: username,
+            avatar: "https://placeimg.com/140/140/any"
+          },
+        });
+        // create a reference to the active user's documents (messages)
+        this.referenceMessagesUser = firebase.firestore().collection('messages').where("uid", "==", this.state.uid);
+
+        // listens for updates in the collection
+
+        this.unsubscribe = this.referenceChatMessages
+          .orderBy("createdAt", "desc")
+          .onSnapshot(this.onCollectionUpdate);
+
+        this.saveMessages();
+      });
+
+    } else {
+      this.setState({ isConnected: false });
+      console.log('offline');
+      this.getMessages();
+    }
+
+    })
+  };
 
 // firebase storage
 async saveMessages() {
@@ -133,7 +168,6 @@ onSend(messages = []) {
   });
 }
 
-
 onCollectionUpdate = (querySnapshot) => {
   const messages = [];
   // go through each document
@@ -158,28 +192,84 @@ onCollectionUpdate = (querySnapshot) => {
   });
 };
 
+renderBubble(props) {
+  const textColor = this.props.route.params.textColor;
+  const bubbleColor = this.props.route.params.bubbleColor;
+  return (
+    <Bubble
+      {...props}
+      wrapperStyle={{
+        right: {
+          backgroundColor: bubbleColor,
+        }
+      }}
+      renderMessageText={(props) => {
+        return (
+          <MessageText
+            {...props}
+            textStyle={{
+              right: { color: textColor },
+            }}
+          />
+        );
+      }}
+      renderTime={(props) => {
+        return (
+          <Time
+            {...props}
+            timeTextStyle={{
+              right: {
+                color: textColor,
+              },
+            }}
+          />
+        );
+      }}
+    />
+  )
+}
+
 renderInputToolbar(props) {
   if (this.state.isConnected == false) {
   } else {
-    return(
+    return (
       <InputToolbar
-      {...props}
+        {...props}
       />
     );
   }
 }
-  renderBubble(props) {
+
+renderCustomActions = (props) => {
+  return <CustomActions {...props} />;
+
+}
+
+//render a map with current location, if the user shared their location on a message
+
+renderCustomView(props) {
+  const { currentMessage } = props;
+  if (currentMessage.location) {
     return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor: '#000',
-          }
+      <MapView
+        style={{
+          width: 150,
+          height: 100,
+          borderRadius: 13,
+          margin: 3
+        }}
+        region={{
+          latitude: currentMessage.location.latitude,
+          longitude: currentMessage.location.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
         }}
       />
-    )
+    );
   }
+  return null;
+}
+
 
 
 //render components
@@ -191,10 +281,15 @@ render() {
     <View style={{ flex: 1, backgroundColor: bgColor }}>
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
+          renderActions={this.renderCustomActions}
+          renderCustomView={this.renderCustomView}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           user={{
             _id: 1,
+            username: this.state.username,
+            avatar: this.state.user.avatar
           }}
         />
       { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
@@ -202,8 +297,3 @@ render() {
     );
   }
 }
-
-
-const styles = StyleSheet.create({
-  
-})
