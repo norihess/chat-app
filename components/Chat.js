@@ -21,22 +21,22 @@ export default class Chat extends React.Component {
     super();
     this.state ={
       messages: [
-        {
-          _id: 1,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://images.unsplash.com/photo-1608155686393-8fdd966d784d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3JlYXRpdmUlMjBwcm9maWxlfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
-          },
-         },
-         {
-          _id: 2,
-          text: 'This is a system message',
-          createdAt: new Date(),
-          system: true,
-         },
+        // {
+        //   _id: 1,
+        //   text: 'Hello developer',
+        //   createdAt: new Date(),
+        //   user: {
+        //     _id: 2,
+        //     name: 'React Native',
+        //     avatar: 'https://images.unsplash.com/photo-1608155686393-8fdd966d784d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3JlYXRpdmUlMjBwcm9maWxlfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
+        //   },
+        //  },
+        //  {
+        //   _id: 2,
+        //   text: 'This is a system message',
+        //   createdAt: new Date(),
+        //   system: true,
+        //  },
       ],
       uid: 0,
       user: {
@@ -46,7 +46,7 @@ export default class Chat extends React.Component {
         image: null,
         location: null,
       },
-      image: null,
+      isConnected: false,
     }
 
     // initializes the Firestore app
@@ -79,9 +79,10 @@ export default class Chat extends React.Component {
         //update user state with currently active user data
         this.setState({
           uid: user.uid,
+          loggedInText: 'Hello there, please wait',
           messages: [],
           user: {
-            _id: user.uid,
+            _id: user.state.uid,
             username: username,
             avatar: "https://placeimg.com/140/140/any"
           },
@@ -91,10 +92,8 @@ export default class Chat extends React.Component {
         this.saveMessages();
         // listens for updates in the collection
 
-        this.unsubscribe = this.referenceChatMessages
-          .orderBy("createdAt", "desc")
-          .onSnapshot(this.onCollectionUpdate);
-
+       // listen for collection changes for current user
+       this.unsubscribe = this.referenceChatMessages.onSnapshot(this.onCollectionUpdate);
         // this.saveMessages();
       });
 
@@ -116,13 +115,24 @@ async saveMessages() {
   }
 }
 
+// async getMessages() {
+//   try {
+//     msgs = await AsyncStorage.getItem('messages');
+//     console.log(msgs)
+//     this.setState({
+//       messages: this.referenceChatMessages.onSnapshot(this.onCollectionUpdate)
+//     })
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
 async getMessages() {
   try {
-    msgs = await AsyncStorage.getItem('messages');
-    console.log(msgs)
+    let messages = await AsyncStorage.getItem('messages') || [];
+
     this.setState({
-      messages: this.referenceChatMessages.onSnapshot(this.onCollectionUpdate)
-    })
+      messages: JSON.parse(messages),
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -193,18 +203,23 @@ onCollectionUpdate = (querySnapshot) => {
   });
 };
 
-renderBubble = (props) => {
+renderBubble(props) {
   return (
     <Bubble
       {...props}
       wrapperStyle={{
         right: {
-          backgroundColor: '#000'
+          backgroundColor: '#0005'
         }
       }}
     />
   )
 }
+
+// creating the circle button
+renderCustomActions = (props) => {
+  return <CustomActions {...props} />;
+};
 
 renderInputToolbar(props) {
   if (this.state.isConnected == false) {
@@ -249,6 +264,7 @@ render() {
 
   return (
     <View style={{ flex: 1, backgroundColor: bgColor }}>
+      <Text>{this.state.loggedInText}</Text>
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
@@ -267,3 +283,4 @@ render() {
     );
   }
 }
+
