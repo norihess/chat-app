@@ -142,7 +142,7 @@ async deleteMessages() {
 // stop listening to auth and collection changes
 componentWillUnmount() {
   // stop listening to authentication
-  this.authUnsubscribe();
+  // this.authUnsubscribe();
 
 }
 
@@ -193,53 +193,32 @@ onCollectionUpdate = (querySnapshot) => {
   });
 };
 
-renderBubble(props) {
-  const textColor = this.props.route.params.textColor;
-  const bubbleColor = this.props.route.params.bubbleColor;
+renderBubble = (props) => {
   return (
     <Bubble
       {...props}
       wrapperStyle={{
         right: {
-          backgroundColor: bubbleColor,
+          backgroundColor: '#000'
         }
-      }}
-      renderMessageText={(props) => {
-        return (
-          <MessageText
-            {...props}
-            textStyle={{
-              right: { color: textColor },
-            }}
-          />
-        );
-      }}
-      renderTime={(props) => {
-        return (
-          <Time
-            {...props}
-            timeTextStyle={{
-              right: {
-                color: textColor,
-              },
-            }}
-          />
-        );
       }}
     />
   )
 }
 
-renderInputToolbar(props) {
-  if (this.state.isConnected == false) {
-  } else {
-    return(
-      <InputToolbar
-      {...props}
-      />
-    );
-  }
-}
+// renderInputToolbar = (props) => {
+//   if (!isConnected) {
+//       // Hide Toolbar
+//   }
+//   else {
+//       // Display Toolbar
+//       return (
+//           <InputToolbar
+//               {...props}
+//           />
+//       );
+//   }
+// }
 
 //render a map with current location, if the user shared their location on a message
 
@@ -277,7 +256,7 @@ render() {
     <View style={{ flex: 1, backgroundColor: bgColor }}>
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
-          renderInputToolbar={this.renderInputToolbar.bind(this)}
+          // renderInputToolbar={renderInputToolbar.bind()}
           renderActions={this.renderCustomActions}
           renderCustomView={this.renderCustomView}
           messages={this.state.messages}
