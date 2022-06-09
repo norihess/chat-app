@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, Platform, KeyboardAvoidingView, Button} from 'react-native';
-import { GiftedChat, Bubble, } from 'react-native-gifted-chat';
-import firebase from 'firebase';
-import 'firebase/firestore';
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
 import MapView from 'react-native-maps';
 import CustomActions from './CustomActions';
+import firebase from 'firebase';
+import 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDGNLywIhnK9I7azadzroOcj3-e4qFQ-Y0",
@@ -88,14 +88,14 @@ export default class Chat extends React.Component {
         });
         // create a reference to the active user's documents (messages)
         this.referenceMessagesUser = firebase.firestore().collection('messages').where("uid", "==", this.state.uid);
-
+        this.saveMessages();
         // listens for updates in the collection
 
         this.unsubscribe = this.referenceChatMessages
           .orderBy("createdAt", "desc")
           .onSnapshot(this.onCollectionUpdate);
 
-        this.saveMessages();
+        // this.saveMessages();
       });
 
     } else {
@@ -142,7 +142,7 @@ async deleteMessages() {
 // stop listening to auth and collection changes
 componentWillUnmount() {
   // stop listening to authentication
-  // this.authUnsubscribe();
+  this.authUnsubscribe();
 
 }
 
@@ -206,21 +206,16 @@ renderBubble = (props) => {
   )
 }
 
-// renderInputToolbar = (props) => {
-//   if (!isConnected) {
-//       // Hide Toolbar
-//   }
-//   else {
-//       // Display Toolbar
-//       return (
-//           <InputToolbar
-//               {...props}
-//           />
-//       );
-//   }
-// }
-
-//render a map with current location, if the user shared their location on a message
+renderInputToolbar(props) {
+  if (this.state.isConnected == false) {
+  } else {
+    return(
+      <InputToolbar
+      {...props}
+      />
+    );
+  }
+}
 
 renderCustomView(props) {
   const { currentMessage } = props;
@@ -256,7 +251,7 @@ render() {
     <View style={{ flex: 1, backgroundColor: bgColor }}>
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
-          // renderInputToolbar={renderInputToolbar.bind()}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderActions={this.renderCustomActions}
           renderCustomView={this.renderCustomView}
           messages={this.state.messages}
