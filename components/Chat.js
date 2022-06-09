@@ -141,8 +141,9 @@ async deleteMessages() {
 
 // stop listening to auth and collection changes
 componentWillUnmount() {
-  // this.authUnsubscribe();
-  
+  // stop listening to authentication
+  this.authUnsubscribe();
+
 }
 
  // Adds messages to cloud storage
@@ -232,17 +233,12 @@ renderBubble(props) {
 renderInputToolbar(props) {
   if (this.state.isConnected == false) {
   } else {
-    return (
+    return(
       <InputToolbar
-        {...props}
+      {...props}
       />
     );
   }
-}
-
-renderCustomActions = (props) => {
-  return <CustomActions {...props} />;
-
 }
 
 //render a map with current location, if the user shared their location on a message
