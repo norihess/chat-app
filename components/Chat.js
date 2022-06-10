@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, Platform, KeyboardAvoidingView, Button} from 'react-native';
+import { StyleSheet, View, Text, Platform, KeyboardAvoidingView, Button, TouchableOpacity} from 'react-native';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
 import MapView from 'react-native-maps';
 import CustomActions from './CustomActions';
+
 import firebase from 'firebase';
 import 'firebase/firestore';
 
@@ -21,22 +22,22 @@ export default class Chat extends React.Component {
     super();
     this.state ={
       messages: [
-        // {
-        //   _id: 1,
-        //   text: 'Hello developer',
-        //   createdAt: new Date(),
-        //   user: {
-        //     _id: 2,
-        //     name: 'React Native',
-        //     avatar: 'https://images.unsplash.com/photo-1608155686393-8fdd966d784d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3JlYXRpdmUlMjBwcm9maWxlfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
-        //   },
-        //  },
-        //  {
-        //   _id: 2,
-        //   text: 'This is a system message',
-        //   createdAt: new Date(),
-        //   system: true,
-        //  },
+        {
+          _id: 1,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://images.unsplash.com/photo-1608155686393-8fdd966d784d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3JlYXRpdmUlMjBwcm9maWxlfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
+          },
+         },
+         {
+          _id: 2,
+          text: 'This is a system message',
+          createdAt: new Date(),
+          system: true,
+         },
       ],
       uid: 0,
       user: {
@@ -56,7 +57,7 @@ export default class Chat extends React.Component {
     //Stores and retrieves the chat messages users send
     this.referenceChatMessages = firebase.firestore().collection("messages");
 
-    this.referenceMessagesUser= null;
+    // this.referenceMessagesUser= null;
   }
 
   componentDidMount() {
@@ -83,17 +84,17 @@ export default class Chat extends React.Component {
           messages: [],
           user: {
             _id: user.state.uid,
-            username: username,
+            name: name,
             avatar: "https://placeimg.com/140/140/any"
           },
         });
         // create a reference to the active user's documents (messages)
-        this.referenceMessagesUser = firebase.firestore().collection('messages').where("uid", "==", this.state.uid);
+        this.referenceMessagesUser = firebase.firestore().collection('messages')
         this.saveMessages();
         // listens for updates in the collection
 
        // listen for collection changes for current user
-       this.unsubscribe = this.referenceChatMessages.onSnapshot(this.onCollectionUpdate);
+       this.unsubscribe = this.referenceChatMessages.orderBy('createdAt', 'desc').onSnapshot(this.onCollectionUpdate);
         // this.saveMessages();
       });
 
@@ -115,17 +116,6 @@ async saveMessages() {
   }
 }
 
-// async getMessages() {
-//   try {
-//     msgs = await AsyncStorage.getItem('messages');
-//     console.log(msgs)
-//     this.setState({
-//       messages: this.referenceChatMessages.onSnapshot(this.onCollectionUpdate)
-//     })
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// }
 async getMessages() {
   try {
     let messages = await AsyncStorage.getItem('messages') || [];
@@ -151,8 +141,12 @@ async deleteMessages() {
 
 // stop listening to auth and collection changes
 componentWillUnmount() {
-  // stop listening to authentication
-  this.authUnsubscribe();
+  if (this.state.isConnected) {
+    // stop listening to authentication
+    this.authUnsubscribe();
+    this.unsubscribe();
+  }
+  
 
 }
 
@@ -216,11 +210,7 @@ renderBubble(props) {
   )
 }
 
-// creating the circle button
-renderCustomActions = (props) => {
-  return <CustomActions {...props} />;
-};
-
+// When user is offline disable sending new messages 
 renderInputToolbar(props) {
   if (this.state.isConnected == false) {
   } else {
@@ -232,24 +222,27 @@ renderInputToolbar(props) {
   }
 }
 
-renderCustomView(props) {
-  const { currentMessage } = props;
+ //function to render custom actions (pictures, camera, geolocation)
+//  const renderCustomActions = (props) => {
+//   return <CustomActions {...props} />;
+// };
+
+renderCustomView (props) {
+  const { currentMessage} = props;
   if (currentMessage.location) {
     return (
-      <MapView
-        style={{
-          width: 150,
-          height: 100,
-          borderRadius: 13,
-          margin: 3
-        }}
-        region={{
-          latitude: currentMessage.location.latitude,
-          longitude: currentMessage.location.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      />
+        <MapView
+          style={{width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3}}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
     );
   }
   return null;
@@ -272,11 +265,7 @@ render() {
           renderCustomView={this.renderCustomView}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
-          user={{
-            _id: 1,
-            username: this.state.username,
-            avatar: this.state.user.avatar
-          }}
+          user={this.state.user}
         />
       { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
     </View>

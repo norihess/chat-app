@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 // import the screens
 import Start from './components/Start';
 import Chat from './components/Chat';
+// import CustomActions from '../CustomActions';
 
 // import react native gesture handler
 import 'react-native-gesture-handler';
@@ -10,6 +11,10 @@ import 'react-native-gesture-handler';
 // import react Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
+renderCustomActions = (props) => {
+  return <CustomActions {...props} />;
+};
 
 export default function App() {
   // Create the navigator
@@ -32,6 +37,7 @@ const Stack = createStackNavigator();
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -40,3 +46,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+// //proptype for customactions component
+// CustomActions.contextTypes = {
+//   actionSheet: PropTypes.func,
+// };
