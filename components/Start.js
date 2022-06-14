@@ -1,217 +1,259 @@
-import React from 'react';
-import { View, Text, Button, TextInput, StyleSheet, ImageBackground, TouchableOpacity, Pressable } from 'react-native';
+import React from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  ImageBackground,
+} from "react-native";
+//native component to allow text components to be clickable (and button)
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useState, useEffect } from "react";
+import * as Font from "expo-font";
+//background image
+import BgImg from "../assets/BackgroundImage.png";
+//user icon
+import SvgImg from "../assets/icon.svg";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useFonts } from "expo-font";
+//using db reference and auth
+import { Auth } from "../firebase-config/firebase-config";
+import { signInAnonymously, onAuthStateChanged, signOut } from "firebase/auth";
 
-import BackgroundImage from '../assets/background-image.png';
+//start component which requires to enter a name and allows to customise chat colors
+export default function Start(props) {
+  const [name, setName] = useState("");
+  const [bg, setBg] = useState("");
+  const [loggedUser, setLoggedUser] = useState([]);
+  //loading the custom font
+  const [loaded] = useFonts({
+    Poppins: require("../assets/fonts/Poppins-Light.ttf"),
+  });
 
-export default class Start extends React.Component {
-	constructor(props) {
-    super(props);
-
-    this.state = {
-      name: "",
-      bgColor: this.colors.pink,
+  useEffect(() => {
+    let isMounted = true;
+    //track state changes
+    //error when logging out?
+    const unsubscribeAuth = onAuthStateChanged(Auth, (currentUser) => {
+      console.log("called", currentUser);
+      if (currentUser?.uid) {
+        setLoggedUser(currentUser.uid);
+      } else {
+        onLogin();
+      }
+    });
+    return () => {
+      //unsubscribe to onSnapshot and auth
+      isMounted = false;
+      unsubscribeAuth();
     };
+  }, []);
+
+  //logs in any user anonymously
+  const onLogin = async () => {
+    try {
+      //When a signed-out user uses an app feature that requires authentication with Firebase,
+      //sign in the user anonymously
+      const user = await signInAnonymously(Auth, loggedUser);
+      console.log(loggedUser);
+      props.navigation.navigate("Chat", {
+        name: name,
+        bg: bg,
+        //trying to pass props to chat (user id)
+        userId: loggedUser,
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+  //log out the user
+  const logOut = async () => {
+    try {
+      await signOut(Auth);
+      setLoggedUser(false);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+  //reference for background colors
+  let colors = {
+    red: "#F95738",
+    black: "#090C08",
+    cream: "#FAF0CA",
+    blue: "#0D3B66",
+    orange: "#EE964B",
+  };
+
+  if (!loaded) {
+    return null;
   }
-	  // function to update the state with the new background color for Chat Screen chosen by the user
-		changeBgColor = (newColor) => {
-			this.setState({ bgColor: newColor });
-		};
-		
-		// backgroud colors to choose
-		colors = {
-			turq: "#114B5F",
-			wheat: "#ECE2D2",
-			maroon: "#6B2737",
-			pink: "#F45B69",
-			blueGrey: "#7C9EB2",
-		};
-	
-		render() {
-			return (
-				// Components to create the color arrays, titles and the app's colors
-				<View style={styles.container}>
-					<ImageBackground
-						source={BackgroundImage}
-						resizeMode="cover"
-						style={styles.backgroundImage}
-					>
-						<View style={styles.titleBox}>
-							<Text style={styles.title}>Chat App</Text>
-						</View>
-	
-						<View style={styles.box1}>
-							<View style={styles.inputBox}>
-								<TextInput
-									style={styles.input}
-									onChangeText={(text) => this.setState({ name: text })}
-									value={this.state.name}
-									placeholder="What is your name?"
-								/>
-							</View>
-	
-							<View style={styles.colorBox}>
-								<Text style={styles.chooseColor}>
-									{" "}
-									Pick a background color!{" "}
-								</Text>
-							</View>
-	
-							{/* All the colors to change the background are here! */}
-							<View style={styles.colorArray}>
-								<TouchableOpacity
-									style={styles.color1}
-									onPress={() => this.changeBgColor(this.colors.turq)}
-								></TouchableOpacity>
-								<TouchableOpacity
-									style={styles.color2}
-									onPress={() => this.changeBgColor(this.colors.blueGrey)}
-								></TouchableOpacity>
-								<TouchableOpacity
-									style={styles.color3}
-									onPress={() => this.changeBgColor(this.colors.maroon)}
-								></TouchableOpacity>
-								<TouchableOpacity
-									style={styles.color4}
-									onPress={() => this.changeBgColor(this.colors.pink)}
-								></TouchableOpacity>
-							</View>
-	
-							{/*This will allow the user to click on a button and be redirected to the chat page */}
-							<Pressable
-								style={styles.button}
-								onPress={() =>
-									this.props.navigation.navigate("Chat", {
-										name: this.state.name,
-										bgColor: this.state.bgColor,
-									})
-								}
-							>
-								<Text style={styles.buttonText}>Start Chatting</Text>
-							</Pressable>
-						</View>
-					</ImageBackground>
-				</View>
-			);
-		}
-	}
+  return (
+    <View style={styles.container}>
+      <ImageBackground source={BgImg} style={styles.backgroundImg}>
+        <Text style={styles.Title}>The Chat App</Text>
+        <KeyboardAwareScrollView
+          behavior={"padding"}
+          style={styles.startBox}
+          contentContainerStyle={{
+            justifyContent: "space-around",
+            flexGrow: 1,
+          }}
+          scrollEnabled={true}
+        >
+          <View style={styles.inputText}>
+            <SvgImg width={20} height={20} />
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(name) => setName(name)}
+              value={name}
+              placeholder="Your Name"
+            ></TextInput>
+          </View>
+          <View style={styles.colorPickContainer}>
+            <Text style={styles.colorPickTitle}>Choose Background Color:</Text>
+            <View style={styles.colorOptionsContainer}>
+              <TouchableOpacity
+                accessible={true}
+                accessibilityLabel="Option to choose a chat background color"
+                accessibilityHint="let's you choose black as chat background color"
+                style={styles.colorOption1}
+                onPress={() => setBg(colors.blue)}
+              ></TouchableOpacity>
+              <TouchableOpacity
+                accessible={true}
+                accessibilityLabel="Option to choose a chat background color"
+                accessibilityHint="let's you choose purple as chat background color"
+                style={[styles.colorOption1, styles.colorOption2]}
+                onPress={() => setBg(colors.cream)}
+              ></TouchableOpacity>
+              <TouchableOpacity
+                accessible={true}
+                accessibilityLabel="Option to choose a chat background color"
+                accessibilityHint="let's you choose blue as chat background color"
+                style={[styles.colorOption1, styles.colorOption3]}
+                onPress={() => setBg(colors.orange)}
+              ></TouchableOpacity>
+              <TouchableOpacity
+                accessible={true}
+                accessibilityLabel="Option to choose a chat background color"
+                accessibilityHint="let's you choose green as chat background color"
+                style={[styles.colorOption1, styles.colorOption4]}
+                onPress={() => setBg(colors.red)}
+              ></TouchableOpacity>
+            </View>
+          </View>
+          {!loggedUser && (
+            <TouchableOpacity
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Start chatting button"
+              accessibilityHint="let's you navigate to the chat screen"
+              onPress={onLogin}
+            >
+              <Text style={styles.button}>Start Chatting</Text>
+            </TouchableOpacity>
+          )}
+          {loggedUser && (
+            <View>
+              <TouchableOpacity
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel="logout button"
+                accessibilityHint="let's you logout (never come back)"
+                onPress={logOut}
+              >
+                <Text style={styles.button}>Start Chatting</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </KeyboardAwareScrollView>
+      </ImageBackground>
+    </View>
+  );
+}
 
-	const styles = StyleSheet.create({
-		container: {
-			flex: 1,
-		},
-	
-		backgroundImage: {
-			flex: 1,
-			width: "100%",
-			alignItems: "center",
-			justifyContent: "center",
-		},
-	
-		titleBox: {
-			height: "40%",
-			width: "88%",
-			alignItems: "center",
-			paddingTop: 100,
-		},
-	
-		title: {
-			fontSize: 45,
-			fontWeight: "600",
-			color: "#FFFFFF",
-		},
-	
-		box1: {
-			backgroundColor: "#FFFFFF",
-			height: "46%",
-			width: "88%",
-			justifyContent: "space-around",
-			alignItems: "center",
-		},
-	
-		inputBox: {
-			borderWidth: 2,
-			borderRadius: 1,
-			borderColor: "grey",
-			width: "88%",
-			height: 60,
-			paddingLeft: 20,
-			flexDirection: "row",
-			alignItems: "center",
-		},
-	
-		image: {
-			width: 20,
-			height: 20,
-			marginRight: 10,
-		},
-	
-		input: {
-			fontSize: 16,
-			fontWeight: "300",
-			color: "#757083",
-			opacity: 0.5,
-		},
-	
-		colorBox: {
-			marginRight: "auto",
-			paddingLeft: 15,
-			width: "88%",
-		},
-	
-		chooseColor: {
-			fontSize: 16,
-			fontWeight: "300",
-			color: "#757083",
-			opacity: 100,
-		},
-	
-		colorArray: {
-			flexDirection: "row",
-			justifyContent: "space-between",
-			width: "80%",
-		},
-	
-		color1: {
-			backgroundColor: "#114B5F",
-			width: 50,
-			height: 50,
-			borderRadius: 25,
-		},
-	
-		color2: {
-			backgroundColor: "#7C9EB2",
-			width: 50,
-			height: 50,
-			borderRadius: 25,
-		},
-	
-		color3: {
-			backgroundColor: "#6B2737",
-			width: 50,
-			height: 50,
-			borderRadius: 25,
-		},
-	
-		color4: {
-			backgroundColor: "#F45B69",
-			width: 50,
-			height: 50,
-			borderRadius: 25,
-		},
-	
-		button: {
-			width: "88%",
-			height: 70,
-			borderRadius: 8,
-			backgroundColor: "#114B5F",
-			alignItems: "center",
-			justifyContent: "center",
-		},
-	
-		buttonText: {
-			color: "#FFFFFF",
-			fontSize: 16,
-			fontWeight: "600",
-		},
-	});
-
+const fontStack = {
+  fontFamily: "Poppins",
+};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  backgroundImg: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  startBox: {
+    backgroundColor: "white",
+    width: "88%",
+    height: "5%",
+    margin: 30,
+  },
+  colorOptionsContainer: {
+    flexDirection: "row",
+    width: "70%",
+    marginTop: 20,
+    justifyContent: "space-between",
+  },
+  textInput: {
+    height: 40,
+    marginLeft: 10,
+    flex: 1,
+    ...fontStack,
+  },
+  colorOption1: {
+    width: 50,
+    height: 50,
+    borderRadius: 50 / 2,
+    backgroundColor: "#0D3B66",
+  },
+  colorOption2: {
+    backgroundColor: "#FAF0CA",
+  },
+  colorOption3: {
+    backgroundColor: "#EE964B",
+  },
+  colorOption4: {
+    backgroundColor: "#F95738",
+  },
+  inputText: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "gray",
+    borderWidth: 1,
+    margin: 20,
+    padding: 5,
+  },
+  Title: {
+    ...fontStack,
+    color: "#ffffff",
+    fontSize: 45,
+    flex: 1,
+    marginTop: 80,
+  },
+  button: {
+    backgroundColor: "#051923",
+    color: "white",
+    width: "86%",
+    alignSelf: "center",
+    height: 50,
+    fontSize: 20,
+    padding: 10,
+    ...fontStack,
+    textAlign: "center",
+  },
+  colorPickContainer: {
+    marginLeft: 20,
+  },
+  selectedColor: {
+    borderColor: "#00ff00",
+    width: 50,
+    height: 50,
+    borderRadius: 50 / 2,
+    backgroundColor: "#090C08",
+  },
+});
