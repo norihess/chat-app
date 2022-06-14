@@ -212,8 +212,7 @@ renderBubble(props) {
 
 // When user is offline disable sending new messages 
 renderInputToolbar(props) {
-  if (this.state.isConnected == false) {
-  } else {
+  if (this.state.isConnected) {
     return(
       <InputToolbar
       {...props}
@@ -223,9 +222,9 @@ renderInputToolbar(props) {
 }
 
  //function to render custom actions (pictures, camera, geolocation)
-//  const renderCustomActions = (props) => {
-//   return <CustomActions {...props} />;
-// };
+renderCustomActions = (props) => {
+  return <CustomActions {...props} />;
+};
 
 renderCustomView (props) {
   const { currentMessage} = props;
