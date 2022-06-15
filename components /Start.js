@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  ImageBackground,
-} from "react-native";
+import { View, Text, TextInput, StyleSheet, ImageBackground } from "react-native";
 //native component to allow text components to be clickable (and button)
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useState, useEffect } from "react";
