@@ -79,11 +79,10 @@ export default function Start(props) {
 
   //reference for background colors
   let colors = {
-    red: "#F95738",
-    black: "#090C08",
-    cream: "#FAF0CA",
-    blue: "#0D3B66",
-    orange: "#EE964B",
+    red: "#B80C09",
+    sapphire: "#0B4F6C",
+    cyan: "#01BAEF",
+    purple: "#370031",
   };
 
   if (!loaded) {
@@ -119,28 +118,28 @@ export default function Start(props) {
                 accessibilityLabel="Option to choose a chat background color"
                 accessibilityHint="let's you choose black as chat background color"
                 style={styles.colorOption1}
-                onPress={() => setBg(colors.blue)}
+                onPress={() => setBg(colors.red)}
               ></TouchableOpacity>
               <TouchableOpacity
                 accessible={true}
                 accessibilityLabel="Option to choose a chat background color"
                 accessibilityHint="let's you choose purple as chat background color"
                 style={[styles.colorOption1, styles.colorOption2]}
-                onPress={() => setBg(colors.cream)}
+                onPress={() => setBg(colors.sapphire)}
               ></TouchableOpacity>
               <TouchableOpacity
                 accessible={true}
                 accessibilityLabel="Option to choose a chat background color"
                 accessibilityHint="let's you choose blue as chat background color"
                 style={[styles.colorOption1, styles.colorOption3]}
-                onPress={() => setBg(colors.orange)}
+                onPress={() => setBg(colors.cyan)}
               ></TouchableOpacity>
               <TouchableOpacity
                 accessible={true}
                 accessibilityLabel="Option to choose a chat background color"
                 accessibilityHint="let's you choose green as chat background color"
                 style={[styles.colorOption1, styles.colorOption4]}
-                onPress={() => setBg(colors.red)}
+                onPress={() => setBg(colors.purple)}
               ></TouchableOpacity>
             </View>
           </View>
@@ -208,16 +207,16 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 50 / 2,
-    backgroundColor: "#0D3B66",
+    backgroundColor: "#B80C09",
   },
   colorOption2: {
-    backgroundColor: "#FAF0CA",
+    backgroundColor: "#0B4F6C",
   },
   colorOption3: {
-    backgroundColor: "#EE964B",
+    backgroundColor: "#01BAEF",
   },
   colorOption4: {
-    backgroundColor: "#F95738",
+    backgroundColor: "#370031",
   },
   inputText: {
     flexDirection: "row",
