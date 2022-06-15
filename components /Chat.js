@@ -15,8 +15,6 @@ const firebaseConfig = {
   projectId: "chat-app-2574c",
   storageBucket: "chat-app-2574c.appspot.com",
   messagingSenderId: "973802150065",
-  appId: "1:973802150065:web:c0f7ebf63fa3e51665ea90",
-  measurementId: "G-HEBZ326P3T"
 };
 
 export default class Chat extends React.Component {
@@ -273,3 +271,4 @@ render() {
     );
   }
 }
+

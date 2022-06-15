@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-import React from "react";
-import PropTypes from "prop-types";
-//imports for communicatios features (permission and device camera/image gallery)
-import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
-//native component to allow text components to be clickable (and button)
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { storage } from "../firebase-config/firebase-config";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
-
-export default class CustomActions extends React.Component {
-  imagePicker = async () => {
-    // expo permission
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    try {
-      if (status === "granted") {
-        // pick image
-        let result = await ImagePicker.launchImageLibraryAsync({
-=======
 /**
  * @description this file handles the CustomAction button in text input field
  * @class CustomActions
@@ -64,7 +40,6 @@ export default class CustomActions extends React.Component {
       if (status === "granted") {
         // pick image
         const result = await ImagePicker.launchImageLibraryAsync({
->>>>>>> c30020300203c3a8b353a2f5d92cbc4badd4a033
           mediaTypes: ImagePicker.MediaTypeOptions.Images, // only images are allowed
         }).catch((error) => console.log(error));
         // canceled process
@@ -84,12 +59,6 @@ export default class CustomActions extends React.Component {
    * @async
    */
   takePhoto = async () => {
-<<<<<<< HEAD
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    try {
-      if (status === "granted") {
-        let result = await ImagePicker.launchCameraAsync({
-=======
     const { status } = await Permissions.askAsync(
       Permissions.CAMERA,
       Permissions.CAMERA_ROLL
@@ -97,7 +66,6 @@ export default class CustomActions extends React.Component {
     try {
       if (status === "granted") {
         const result = await ImagePicker.launchCameraAsync({
->>>>>>> c30020300203c3a8b353a2f5d92cbc4badd4a033
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
         }).catch((error) => console.log(error));
 
@@ -111,16 +79,6 @@ export default class CustomActions extends React.Component {
     }
   };
 
-<<<<<<< HEAD
-  //location function
-  getLocation = async () => {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === "granted") {
-        const result = await Location.getCurrentPositionAsync({}).catch(
-          (error) => console.log(error)
-        );
-=======
   /**
    * get the location of the user by using GPS
    * @function getLocation
@@ -135,7 +93,6 @@ export default class CustomActions extends React.Component {
         ).catch((error) => console.log(error));
         const longitude = JSON.stringify(result.coords.longitude);
         const altitude = JSON.stringify(result.coords.latitude);
->>>>>>> c30020300203c3a8b353a2f5d92cbc4badd4a033
         if (result) {
           this.props.onSend({
             location: {
@@ -150,17 +107,6 @@ export default class CustomActions extends React.Component {
     }
   };
 
-<<<<<<< HEAD
-  uploadImageFetch = async (uri) => {
-    //To create your own blob, you need to create a new XMLHttpRequest and set its responseType to 'blob'. Then, open the connection and retrieve the URI’s data (the image) via GET:
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      //on load
-      xhr.onload = function () {
-        resolve(xhr.response);
-      };
-      //on error
-=======
   /**
    * Upload images to firebase
    * @function uploadImageFetch
@@ -172,15 +118,10 @@ export default class CustomActions extends React.Component {
       xhr.onload = function () {
         resolve(xhr.response);
       };
->>>>>>> c30020300203c3a8b353a2f5d92cbc4badd4a033
       xhr.onerror = function (e) {
         console.log(e);
         reject(new TypeError("Network request failed"));
       };
-<<<<<<< HEAD
-      //on complete
-=======
->>>>>>> c30020300203c3a8b353a2f5d92cbc4badd4a033
       xhr.responseType = "blob";
       xhr.open("GET", uri, true);
       xhr.send(null);
@@ -188,28 +129,6 @@ export default class CustomActions extends React.Component {
 
     const imageNameBefore = uri.split("/");
     const imageName = imageNameBefore[imageNameBefore.length - 1];
-<<<<<<< HEAD
-    // Create a child reference
-    //images will be uploaded in the subfolder "images"
-    const imagesRef = ref(storage, `images/${imageName}`);
-    // imagesRef now points to 'images'
-    //upload blob
-    await uploadBytes(imagesRef, blob);
-    console.log("blob uploaded");
-    const downloadUrl = await getDownloadURL(imagesRef);
-    console.log(
-      "file available on firebase storage at the following link",
-      downloadUrl
-    );
-    return downloadUrl;
-  };
-
-  onActionPress = () => {
-    const options = [
-      "Choose form library",
-      "Take picture",
-      "Send location",
-=======
 
     const ref = firebase.storage().ref().child(`images/${imageName}`);
 
@@ -229,7 +148,6 @@ export default class CustomActions extends React.Component {
       "Choose From Library",
       "Take Picture",
       "Send Location",
->>>>>>> c30020300203c3a8b353a2f5d92cbc4badd4a033
       "Cancel",
     ];
     const cancelButtonIndex = options.length - 1;
@@ -254,11 +172,6 @@ export default class CustomActions extends React.Component {
       }
     );
   };
-<<<<<<< HEAD
-  render() {
-    return (
-      <TouchableOpacity style={[styles.container]} onPress={this.onActionPress}>
-=======
 
   //render function
   render() {
@@ -270,7 +183,6 @@ export default class CustomActions extends React.Component {
         style={[styles.container]}
         onPress={this.onActionPress}
       >
->>>>>>> c30020300203c3a8b353a2f5d92cbc4badd4a033
         <View style={[styles.wrapper, this.props.wrapperStyle]}>
           <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
         </View>
