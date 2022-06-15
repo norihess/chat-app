@@ -5,9 +5,9 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useState, useEffect } from "react";
 import * as Font from "expo-font";
 //background image
-import BgImg from "../assets/BackgroundImage.png";
+import BgImg from '../assets/BackgroundImage.png';
 //user icon
-import SvgImg from "../assets/icon.svg";
+import SvgImg from '../assets/icon.svg';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useFonts } from "expo-font";
 //using db reference and auth
