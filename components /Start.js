@@ -116,28 +116,28 @@ export default function Start(props) {
               <TouchableOpacity
                 accessible={true}
                 accessibilityLabel="Option to choose a chat background color"
-                accessibilityHint="let's you choose black as chat background color"
+                accessibilityHint="let's you choose red as chat background color"
                 style={styles.colorOption1}
                 onPress={() => setBg(colors.red)}
               ></TouchableOpacity>
               <TouchableOpacity
                 accessible={true}
                 accessibilityLabel="Option to choose a chat background color"
-                accessibilityHint="let's you choose purple as chat background color"
+                accessibilityHint="let's you choose sapphire as chat background color"
                 style={[styles.colorOption1, styles.colorOption2]}
                 onPress={() => setBg(colors.sapphire)}
               ></TouchableOpacity>
               <TouchableOpacity
                 accessible={true}
                 accessibilityLabel="Option to choose a chat background color"
-                accessibilityHint="let's you choose blue as chat background color"
+                accessibilityHint="let's you choose cyan as chat background color"
                 style={[styles.colorOption1, styles.colorOption3]}
                 onPress={() => setBg(colors.cyan)}
               ></TouchableOpacity>
               <TouchableOpacity
                 accessible={true}
                 accessibilityLabel="Option to choose a chat background color"
-                accessibilityHint="let's you choose green as chat background color"
+                accessibilityHint="let's you choose dark purple as chat background color"
                 style={[styles.colorOption1, styles.colorOption4]}
                 onPress={() => setBg(colors.purple)}
               ></TouchableOpacity>
