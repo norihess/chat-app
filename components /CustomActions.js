@@ -19,7 +19,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 //import permissions and imagepicker
 import * as Permissions from "expo-permissions";
-import * as ImagePicker from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";n
 import * as Location from "expo-location";
 import firebase from 'firebase';
 import firestore from 'firebase';
